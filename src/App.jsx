@@ -6,6 +6,7 @@ import FilterBar from './components/FilterBar'
 import TaskList from './components/TaskList'
 import TaskForm from './components/TaskForm'
 import { useLocalStorage } from './hooks/useLocalStorage'
+import { DEFAULT_TASKS } from './data/defaultTasks'
 
 const DEFAULT_FILTERS = {
   search: '',
@@ -20,6 +21,22 @@ export default function App() {
   const [formOpen, setFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
+
+  // İlk açılışta LocalStorage boşsa örnek verileri yükle
+  useEffect(() => {
+    const stored = window.localStorage.getItem('staj-tasks')
+    if (!stored || JSON.parse(stored).length === 0) {
+      setTasks(DEFAULT_TASKS)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Örnek verileri sıfırla
+  const handleResetToDefaults = () => {
+    if (window.confirm('Tüm görevler silinerek örnek veriler yüklenecek. Devam etmek istiyor musunuz?')) {
+      setTasks(DEFAULT_TASKS)
+    }
+  }
 
   // Dark mode uygula
   useEffect(() => {
@@ -74,7 +91,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <Header darkMode={darkMode} onToggleDark={() => setDarkMode(!darkMode)} />
+      <Header darkMode={darkMode} onToggleDark={() => setDarkMode(!darkMode)} onResetDefaults={handleResetToDefaults} />
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5">
         {/* İstatistikler */}
